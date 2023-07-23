@@ -8,7 +8,7 @@ const mongoURI = 'mongodb://localhost:27017/inotebook';
 
 const connectToMongo = () => {
 	mongoose.connect(mongoURI);
-	console.log('connected to Mongo Sucessfully');
+	console.log('Connected to Mongo Sucessfully');
 };
 
 // const connectToMongo = async () => {

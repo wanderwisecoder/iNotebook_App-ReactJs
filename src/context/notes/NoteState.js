@@ -9,6 +9,7 @@ const NoteState = (props) => {
 	// Get all Notes
 	const getNotes = async () => {
 		// todo: API call
+		console.log('Adding a new note.');
 		const response = await fetch(`${host}/api/note/fetchallnote`, {
 			method: 'GET',
 			headers: {
@@ -17,6 +18,7 @@ const NoteState = (props) => {
 			},
 		});
 		const json = await response.json();
+		console.log(json);
 		setNotes(json);
 	};
 

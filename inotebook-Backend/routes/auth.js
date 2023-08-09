@@ -11,21 +11,18 @@ const JWT_SECRET = 'WanderWiseTraveller';
 // ROUTE - 1: Create a User using: POST "/api/auth/createUser". No Login Required.
 
 router.post('/createuser', [body('name', 'Enter a valid name.').isLength({ min: 3 }), body('email', 'Enter a valid email.').isEmail(), body('password', 'Password must be at least 5 characters.').isLength({ min: 5 })], async (req, res) => {
-	// console.log(req.body);
-	// const user = User(req.body);
-	// user.save();
-
+	let success = false;
 	//If their are errors, return Bad request and the errors.
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {
-		return res.status(400).json({ errors: errors.array() });
+		return res.status(400).json({ success, errors: errors.array() });
 	}
 
 	//Check weather the user with same email exists already
 	try {
 		let user = await User.findOne({ email: req.body.email });
 		if (user) {
-			return res.status(400).json({ error: 'Sorry a user with this email already exists.' });
+			return res.status(400).json({ success, error: 'Sorry a user with this email already exists.' });
 		}
 		const salt = await bcrypt.genSalt(10);
 
@@ -42,22 +39,23 @@ router.post('/createuser', [body('name', 'Enter a valid name.').isLength({ min: 
 				id: user.id,
 			},
 		};
-
 		const authtoken = jwt.sign(data, JWT_SECRET);
 		console.log(authtoken);
 
-		//res.json({ user });
-		res.json({ authtoken });
+		//res.json({ user })
+		success = true;
+		res.json({ success, authtoken });
 	} catch (error) {
 		//catching the error.
 		console.log(error.message);
-		res.status(500).send('Some Error occured.');
+		res.status(500).send('Some Error occurred.');
 	}
 });
 
-// ROUTE - 2: Aurhenticate a User using: POST "/api/auth/login". No Login Required.
+// ROUTE - 2: Authenticate a User using: POST "/api/auth/login". No Login Required.
 
 router.post('/login', [body('email', 'Enter a valid email.').isEmail(), body('password', 'Password cannot be blank.').exists()], async (req, res) => {
+	let success = false;
 	//If their are errors, return Bad request and the errors.
 	const errors = validationResult(req);
 	if (!errors.isEmpty()) {
@@ -67,11 +65,13 @@ router.post('/login', [body('email', 'Enter a valid email.').isEmail(), body('pa
 	try {
 		let user = await User.findOne({ email });
 		if (!user) {
+			success = false;
 			return res.status(400).json({ error: 'Please try to login with correct credentials.' });
 		}
 		const passwordCompare = await bcrypt.compare(password, user.password);
 		if (!passwordCompare) {
-			return res.status(400).json({ error: 'Please try to login with correct credentials.' });
+			success = false;
+			return res.status(400).json({ success, error: 'Please try to login with correct credentials.' });
 		}
 
 		const data = {
@@ -80,10 +80,8 @@ router.post('/login', [body('email', 'Enter a valid email.').isEmail(), body('pa
 			},
 		};
 		const authtoken = jwt.sign(data, JWT_SECRET);
-		console.log(authtoken);
-
-		//res.json({ user });
-		res.json({ authtoken });
+		success = true;
+		res.json({ success, authtoken });
 	} catch (error) {
 		//catching the error.
 		console.log(error.message);

@@ -21,9 +21,9 @@ const Login = (props) => {
 		if (json.success) {
 			//save the auth  token and redirect
 			localStorage.setItem('token', json.authtoken);
-			//			history.push('/');
-			navigate('/');
 			props.showAlert('Successfully Logged In', 'success');
+			//history.push('/'); history.push has been replaced by navigate(''); in the newer version.
+			navigate('/');
 		} else {
 			props.showAlert('Invalid Details', 'danger');
 		}
@@ -32,7 +32,8 @@ const Login = (props) => {
 		setCredentials({ ...credentials, [e.target.name]: e.target.value });
 	};
 	return (
-		<div>
+		<div className='mt-3'>
+			<h2>Login to continue to iNoteBook.</h2>
 			<form onSubmit={handleSubmit}>
 				<div className='mb-3'>
 					<label htmlFor='exampleInputEmail1' className='form-label'>

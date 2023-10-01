@@ -2,17 +2,24 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import noteContext from '../context/notes/noteContext';
 import Noteitem from './Noteitem';
 import AddNote from './AddNote';
+import { useNavigate } from 'react-router-dom';
 
 const Notes = (props) => {
-	const ref = useRef(null);
-	const refClose = useRef(null);
 	const context = useContext(noteContext);
+	let navigate = useNavigate();
 	const { notes, getNotes, editNote } = context;
 
 	useEffect(() => {
-		getNotes();
+		if (localStorage.getItem('token')) {
+			getNotes();
+		} else {
+			//history.push('/login'); history.push has been replaced by navigate(''); in the newer version.
+			navigate('/login');
+		}
 		// eslint-disable-next-line
 	}, []);
+	const ref = useRef(null);
+	const refClose = useRef(null);
 	const [note, setNote] = useState({ id: '', etitle: '', edescription: '', etag: '' });
 
 	const updateNote = (currentNote) => {
